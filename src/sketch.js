@@ -1,6 +1,8 @@
-const size = 0.6;
+const size = 2.7;
 let countryPolygons = [];
 let country = []
+const mapHeight = 800 
+const mapWidth = 1000 
 
 function convertPathToPolygons(path) {
   let coord_point = [0, 0];
@@ -56,30 +58,34 @@ function preload(){
 }
 
 function setup() {
-  createCanvas(1200, 600);
+  createCanvas(mapWidth, mapHeight); //change later when intergrate the diesciption
   country = country['countries']
 
   for (let i = 0; i < country.length; i++) {
-    countryPolygons.push(convertPathToPolygons(
-      country[i].vertexPoint
-    ));
+    countryPolygons.push(
+      { 
+        "name": country.name,
+        "poly": convertPathToPolygons(country[i].vertexPoint)
+      }
+    );
   }
 }
 
 function draw() {
   stroke(255);
   strokeWeight(1);
+  background(255);
   let collision = false;
   for (let i = 0; i < countryPolygons.length; i++) {
     fill(100);
     if (!collision && mouseIsPressed) {
-      collision = countryPolygons[i].some(poly => detectCollision(poly, mouseX, mouseY));
+      collision = countryPolygons[i].poly.some(poly => detectCollision(poly, mouseX, mouseY));
       if (collision) {
         fill('green');
       }
     }
 
-    for (const poly of countryPolygons[i]) {
+    for (const poly of countryPolygons[i].poly) {
       beginShape();
       for (const vert of poly) {
         vertex(...vert);
