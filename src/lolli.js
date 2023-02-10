@@ -9,10 +9,12 @@ let year;
 let country;
 let rate;
 
+
 function preload() {
   // load the csv file containing the unemployment data
   unemploymentData = loadTable("assets/employment.csv", "csv", "header");
 }
+
 
 function setup() {
   // create a canvas to display the chart
@@ -32,9 +34,13 @@ function setup() {
   // display the bar chart
 }
 
+
+
 function draw(){
-  displayBarChart(nativeMenData, nativeWomenData, foreignMenData, foreignWomenData);
+  displayLollipopChart(nativeMenData, foreignMenData, nativeWomenData, foreignWomenData);
 }
+
+
 
 function extractData(data, birth, gender, year, country, rate) {
   // extract the rows from the data table that match the specified birth, gender, year, and country
@@ -46,24 +52,90 @@ function extractData(data, birth, gender, year, country, rate) {
   return unemploymentRates;
 }
 
-function displayBarChart(nativeMenData, nativeWomenData, foreignMenData, foreignWomenData) {
 
-  // display the bars for each group
-  displayBar(50, nativeMenData, "Native Men");
-  displayBar(150, nativeWomenData, "Native Women");
-  displayBar(250, foreignMenData, "Foreign Men");
-  displayBar(350, foreignWomenData, "Foreign Women");
+
+function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) {
+    let x = 50;
+    let x2 = 100;
+    let y = 0;
+    let barWidth = 100;
+    let barHeight = 0;
+
+    let colorNative = color(255, 0, 0);
+    let colorForeign = color(0, 0, 255);
+
+    //____________________________MEN_______________________________
+  
+    // Display lollipop for native men in red
+    barHeight = nativeMen * 10;
+    displayLollipop(x, y, barWidth, barHeight, colorNative);
+    let firstLollipopY = y + barHeight;
+
+  
+    // Display lollipop for foreign men in blue
+    barHeight = foreignMen * 10;
+    displayLollipop(x, y, barWidth, barHeight, colorForeign);
+    let secondLollipopY = y + barHeight;
+
+    // Connect the two lollipops with a gradient stroke
+    let startColor = colorNative;
+    let endColor = colorForeign;
+    let gradientSteps = 50;
+    let gradientIncrement = (secondLollipopY - firstLollipopY) / gradientSteps;
+
+    strokeWeight(3);
+    for (let i = 0; i < gradientSteps; i++) {
+    let gradientY = firstLollipopY + i * gradientIncrement;
+    let gradientColor = lerpColor(startColor, endColor, i / gradientSteps);
+    stroke(gradientColor);
+    line(x + barWidth / 2, gradientY, x + barWidth / 2, gradientY + gradientIncrement);
+    }
+    
+
+    //_________________________WOMEN______________________________
+
+    // Display lollipop for native women in red
+    barHeight = nativeWomen * 10;
+    displayLollipop(x2, y, barWidth, barHeight, colorNative);
+    firstLollipopY = y + barHeight;
+
+   
+    // Display lollipop for foreign women in blue
+    barHeight = foreignWomen * 10;
+    displayLollipop(x2, y, barWidth, barHeight, colorForeign);
+    secondLollipopY = y + barHeight;
+
+
+    // Connect the two lollipops with a gradient stroke
+    
+    startColor = colorNative;
+    endColor = colorForeign;
+    gradientSteps = 50;
+    gradientIncrement = (secondLollipopY - firstLollipopY) / gradientSteps;
+
+    strokeWeight(3);
+    for (let i = 0; i < gradientSteps; i++) {
+    gradientY = firstLollipopY + i * gradientIncrement;
+    gradientColor = lerpColor(startColor, endColor, i / gradientSteps);
+    stroke(gradientColor);
+    line(x2 + barWidth / 2, gradientY, x2 + barWidth / 2, gradientY + gradientIncrement);
+    }
+
 }
+  
+  
 
-function displayBar(x, value, label) {
-  // draw the bar for the specified value and label
-  fill(255, 0, 0);
-  rect(x, height - value, 50, value);
-  text(label, x, height - value - 10);
+
+function displayLollipop(x, y, barWidth, barHeight, color) {
+    fill(color);
+    strokeWeight(1);
+    stroke(0, 0, 0);
+    
+    //line(x + barWidth / 2, y, x + barWidth / 2, y + barHeight);
+
+    ellipse(x + barWidth / 2, y + barHeight, 15, 15);
 }
+  
 
 
-
-
-
-
+  
