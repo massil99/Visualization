@@ -9,8 +9,6 @@ let year;
 let country;
 let rate;
 
-
-
 function preload() {
   // load the csv file containing the unemployment data
   unemploymentData = loadTable("assets/employment.csv", "csv", "header");
@@ -32,12 +30,15 @@ function setup() {
   foreignWomenData = extractData(unemploymentData, "FB", "WMN", year, country, rate);
 
   // display the bar chart
+}
+
+function draw(){
   displayBarChart(nativeMenData, nativeWomenData, foreignMenData, foreignWomenData);
 }
 
 function extractData(data, birth, gender, year, country, rate) {
   // extract the rows from the data table that match the specified birth, gender, year, and country
-  let filteredData = data.findRows(row => row.get("BIRTH") === birth && row.get("GENDER") === gender && row.get("YEAR") === year && row.get("COUNTRY") === country && row.get("RATE") === rate);
+  let filteredData = data.findRows(birth,"BIRTH").filter(row => row.get("GENDER") == gender && row.get("YEAR") == year && row.get("COUNTRY") == country && row.get("RATE") == rate);
   
   // extract the unemployment rates from the filtered data
   let unemploymentRates = filteredData.map(row => row.get("Value"));
