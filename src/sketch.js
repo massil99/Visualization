@@ -119,35 +119,33 @@ function draw() {
 	let collision = false;
 	for (let i = 0; i < countryPolygons.length; i++) {
 		result = employment.findRows(countryPolygons[i]['name'], 'Country')
-		if (result.length === 0) {
-			strokeWeight(1);
-			stroke(255);
-			fill(70);
-		} else {
-			colorMode(HSL)
-			let val = 0;
-			for (let x = 0; x < result.length; x++) {
-				if (result[x].get('Year') == yearSlider.value() &&
-					result[x].get('RATE') == 'U_RATE') {
-
-					val = result[x].get('Value')
-					break;
-				}
-			}
+		colorMode(HSL)
+		let val = 0;
+		result = result.filter(row => row.get('Year') == yearSlider.value() &&
+				row.get('RATE') == 'U_RATE')
+		
+		if (result.length !== 0){
+			val = result[0].get('Value')
 			//fill(16, 70, map(val, minValEmp, maxValEmp, 0, 100));
 			strokeWeight(1);
 			stroke(255);
 			//fill(16, 70, val);
 			fill(map(val, 0, 100, 0, 255), 70, map(val, 0, 100, 50, 100));
+		}else{
+			strokeWeight(1);
+			stroke(255);
+			fill(70)
 		}
+		
 		if (!collision && mouseIsPressed) {
 			collision = countryPolygons[i].poly.some(poly => detectCollision(poly, mouseX, mouseY));
 			if (collision) {
-				console.log(mouseX, mouseY, countryPolygons[i].name)
 				strokeWeight(3);
 				stroke('blue');
 				fill(40);
 				collision = false;
+				
+				// Can do stuff on click here
 			}
 		}
 
