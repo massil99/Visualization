@@ -1,25 +1,123 @@
-<!DOCTYPE html>
-<html lang="">
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Self-reported unmet needs for medical examination by sex, age, main reason declared and groups of country of citizenship</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+      }
+      .chartMenu {
+        width: 100vw;
+        height: 40px;
+        background: #1A1A1A;
+        color: rgba(54, 162, 235, 1);
+      }
+      .chartMenu p {
+        padding: 10px;
+        font-size: 20px;
+      }
+      .chartCard {
+        width: 100vw;
+        height: calc(100vh - 40px);
+        background: rgba(54, 162, 235, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .chartBox {
+        width: 700px;
+        padding: 20px;
+        border-radius: 20px;
+        border: solid 3px rgba(54, 162, 235, 1);
+        background: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="chartMenu">
+      <p>Self-reported unmet needs for medical examination by sex, age, main reason declared and groups of country of citizenship</p>
+    </div>
+    <div class="chartCard">
+      <div class="chartBox">
+        <canvas id="myChart"></canvas>
+      </div>
+    </div>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
+    <script>
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>p5.js example</title>
-  <style>
-    body {
-      padding: 0;
-      margin: 0;
-      background-color: #1b1b1b;
-    }
-  </style>
-  <script src="../p5.min.js"></script>
-  <!-- <script src="../addons/p5.sound.js"></script> -->
-  <script src="sketch.js"></script>
-</head>
+    // Data: France 2021
 
-<body>
-  <main>
-  </main>
-</body>
+    // female datapoint converter
+    const female = [3.3, 0.3, 4.6, 0.4, 92.8, 0.1, 1.0]
+    const femaleData = [];
+    female.forEach(element => femaleData.push(element * -1))
 
+    // setup 
+    const data = {
+      labels: ['Too expensive', 'Too far to travel', 'Too expensive or too far to travel or waiting list', 'No time', 'No unmet needs to declare', 'Did not know any good doctor or specialist', 'Waiting list'],
+      datasets: [{
+        label: 'Male',
+        data: [1.9, 0, 2.4, 0.7, 95.2, 0, 0.5],
+        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1
+      },
+      {
+        label: 'Female',
+        data: femaleData,
+        backgroundColor: 'rgba(255, 26, 104, 0.2)',
+        borderColor: 'rgba(255, 26, 104, 1)',
+        borderWidth: 1
+      }]
+    };
+
+    // block tooltip
+    const tooltip = {
+      yAlign: 'bottom',
+      titleAligh: 'center',
+      callbacks: {
+        label: function(context) {
+          return `${context.dataset.label} ${Math.abs(context.raw)}`;
+        }
+      }
+    };
+
+    // config 
+    const config = {
+      type: 'bar',
+      data,
+      options: {
+        indexAxis: 'y',
+        scales: {
+          x: {
+            stacked: true,
+            ticks: {
+              callback: function(value, index, values) {
+                 return Math.abs(value);
+              }
+            }
+          },
+          y: {
+            beginAtZero: true,
+            stacked: true
+          }
+        },
+        plugins: {
+          tooltip,
+        }
+      }
+    };
+
+    // render init block
+    const myChart = new Chart(
+      document.getElementById('myChart'),
+      config
+    );
+    </script>
+
+  </body>
 </html>
