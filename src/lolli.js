@@ -19,6 +19,9 @@ function preload() {
 function setup() {
   // create a canvas to display the chart
   createCanvas(800, 600);
+  
+  translate(0, -height);
+  scale(1, -1);
 
   // specify the year and country for which you want to display the chart
   year = "2020";
@@ -31,13 +34,17 @@ function setup() {
   foreignMenData = extractData(unemploymentData, "FB", "MEN", year, country, rate);
   foreignWomenData = extractData(unemploymentData, "FB", "WMN", year, country, rate);
 
-  // display the bar chart
 }
 
 
 
 function draw(){
   displayLollipopChart(nativeMenData, foreignMenData, nativeWomenData, foreignWomenData);
+
+  //fill(0, 0, 0);
+  //text("MEN", 90,10);
+  //fill(0, 0, 0);
+  //text("WOMEN", 180, 10);
 }
 
 
@@ -61,8 +68,14 @@ function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) 
     let barWidth = 100;
     let barHeight = 0;
 
-    let colorNative = color(255, 0, 0);
-    let colorForeign = color(0, 0, 255);
+    let colorNative = color(255, 40, 40); //red
+    let colorForeign = color(255, 222, 20);  //yellow
+
+    // X axis
+    //line(0, height - 50, width, height - 50);
+
+    // Y axis
+    //line(50, 0, 50, height);
 
     //____________________________MEN_______________________________
   
