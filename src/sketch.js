@@ -35,34 +35,6 @@ function convertPathToPolygons(path) {
 	return polygons;
 }
 
-function getCenterOfCountry(polys) {
-	let center = [0, 0];
-	let sumArea = 0;
-
-	for (let i = 0; i < polys[0].length - 3; i++) {
-		let area = (polys[0][i + 1][0] - polys[0][i][0]) * (polys[0][i + 2][1] - polys[0][i][1]) - (polys[0][i + 2][0] - polys[0][i][0]) * (polys[0][i + 1][1] - polys[0][i][1])
-		area /= 2;
-		sumArea += area;
-
-		let x = 0;
-		x += polys[0][i][0]
-		x += polys[0][i + 1][0]
-		x += polys[0][i + 2][0]
-		x /= 3;
-		center[0] += x * area;
-
-		let y = 0;
-		y += polys[0][i][1]
-		y += polys[0][i + 1][1]
-		y += polys[0][i + 2][1]
-		y /= 3;
-		center[1] += y * area;
-	}
-	center[0] /= sumArea
-	center[1] /= sumArea
-	return center
-}
-
 function detectCollision(polygon, x, y) {
 	let c = false;
 	// for each edge of the polygon
@@ -103,14 +75,13 @@ function setup() {
 			{
 				"name": country[i]["name"],
 				"poly": polys,
-				"center": getCenterOfCountry(polys),
 			}
 		);
 	}
 
 	yearSlider = createSlider(min(employment.getColumn('Year')), max(employment.getColumn('Year')));
 	yearSlider.position(0, 0, 'static');
-	yearSlider.style('width', '600px');
+	yearSlider.style('width',`${mapWidth}px`);
 }
 
 function draw() {
