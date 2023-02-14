@@ -4,24 +4,25 @@
     box-sizing: border-box;
 }
 body{
-    background-color: lightgray;
+    background-color: #d3d3d3;
 
 }
 
+#p5stuff{
+    display: inline;
+}
 main{
+    width: 100%;
+    padding: 1rem 5rem;
     display: flex;
     align-items: center;
-    justify-content: center;
-    flex-direction:row-reverse; 
+    justify-content: space-between;
+    flex-direction: column; 
 }
 
-#description{
-    padding: 3rem;
-}
 
 h2{
-    font-size: 3rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
 h3{
@@ -32,4 +33,14 @@ p{
     margin-bottom: 1rem;
     text-align: justify;
     text-justify: inter-word;
+}
+
+.closeBtn{
+    color: white;
+    width: 20px;
+    height: 20px;
+    background-color: rgb(235, 132, 15);
+    outline: none;
+    border-radius: 2px;
+    border: none;
 }

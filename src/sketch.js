@@ -1,12 +1,15 @@
-const size = 2.7;
+const size = 2;
 let countryPolygons = [];
 let country = []
-const mapHeight = 800
-const mapWidth = 1000
+const mapHeight = 700;
+const mapWidth = 900;
 let yearSlider;
 
-let maxValEmp;
-let minValEmp;
+let popUp;
+let showPopup;
+
+let selected_country;
+let hoverd_country;
 
 function convertPathToPolygons(path) {
 	let coord_point = [0, 0];
@@ -56,6 +59,10 @@ function detectCollision(polygon, x, y) {
 	return c;
 }
 
+function hidePopu() {
+	showPopup = false;
+}
+
 function preload() {
 	country = loadJSON('assets/countries.json')
 	center_country = loadJSON('assets/center.json')
@@ -64,7 +71,23 @@ function preload() {
 }
 
 function setup() {
-	createCanvas(mapWidth, mapHeight); //change later when intergrate the diesciption
+	yearSlider = createSlider(min(employment.getColumn('Year')), max(employment.getColumn('Year')));
+	yearSlider.parent('p5stuff')
+	yearSlider.position(0, 0, 'relative');
+	yearSlider.style('width', `${mapWidth}px`);
+
+	let offset = 40;
+	popUp = { 'x': offset, 'y': offset, 'width': mapWidth - offset * 2, 'height': mapHeight - offset * 2 }
+
+	closebtn = createButton('X')
+	closebtn.parent('p5stuff')
+	closebtn.addClass('closeBtn')
+	closebtn.position(-popUp.x, popUp.y, 'relative')
+	closebtn.mousePressed(hidePopu);
+	closebtn.hide();
+
+	const myCanvas = createCanvas(mapWidth, mapHeight); //change later when intergrate the diesciption
+	myCanvas.parent('p5stuff')
 	country = country['countries'];
 	maxValEmp = max(employment.getColumn('Value'))
 	minValEmp = min(employment.getColumn('Value'))
@@ -78,45 +101,39 @@ function setup() {
 			}
 		);
 	}
-
-	yearSlider = createSlider(min(employment.getColumn('Year')), max(employment.getColumn('Year')));
-	yearSlider.position(0, 0, 'static');
-	yearSlider.style('width',`${mapWidth}px`);
 }
 
 function draw() {
 	colorMode(RGB)
-	background(255);
+	background(211, 211, 211);
 	let collision = false;
 	for (let i = 0; i < countryPolygons.length; i++) {
 		result = employment.findRows(countryPolygons[i]['name'], 'Country')
 		colorMode(HSL)
-		let val = 0;
 		result = result.filter(row => row.get('Year') == yearSlider.value() &&
-				row.get('RATE') == 'U_RATE')
-		
-		if (result.length !== 0){
-			val = result[0].get('Value')
+			row.get('RATE') == 'U_RATE')
+
+		if (result.length !== 0) {
+			let val = result[0].get('Value')
 			//fill(16, 70, map(val, minValEmp, maxValEmp, 0, 100));
 			strokeWeight(1);
 			stroke(255);
 			//fill(16, 70, val);
-			fill(map(val, 0, 100, 0, 255), 70, map(val, 0, 100, 50, 100));
-		}else{
+			fill(150, 70, map(val, 0, 100, 0, 100));
+		} else {
 			strokeWeight(1);
 			stroke(255);
 			fill(70)
 		}
-		
-		if (!collision && mouseIsPressed) {
+
+		if (!showPopup && !collision) {
 			collision = countryPolygons[i].poly.some(poly => detectCollision(poly, mouseX, mouseY));
 			if (collision) {
-				strokeWeight(3);
-				stroke('blue');
-				fill(40);
-				collision = false;
-				
-				// Can do stuff on click here
+				hoverd_country = countryPolygons[i].name
+				if (mouseIsPressed) {
+					selected_country = countryPolygons[i].name
+					showPopup = true;
+				}
 			}
 		}
 
@@ -128,13 +145,52 @@ function draw() {
 			endShape();
 		}
 	}
+
 	for (let i = 0; i < countryPolygons.length; i++) {
-		result = employment.findRows(countryPolygons[i]['name'], 'Country')
-		if (result.length !== 0) {
-			fill(50);
-			ellipse(center_country[countryPolygons[i]['name']][0],center_country[countryPolygons[i]['name']][1], 20);
+		if (selected_country === countryPolygons[i].name) {
+			strokeWeight(3);
+			stroke('blue');
+			fill(40);
+			collision = false;
+
+			for (const poly of countryPolygons[i].poly) {
+				beginShape();
+				for (const vert of poly) {
+					vertex(...vert);
+				}
+				endShape();
+			}
+
+			strokeWeight(1);
+			stroke(255);
+
+			if (showPopup === true) {
+				fill(0, 0, 0, 0.5);
+				rect(0, 0, width, height);
+				fill(90);
+				rect(popUp.x, popUp.y, popUp.width, popUp.height);
+				closebtn.style('display', 'inline');
+			} else {
+				selected_country = ''
+				console.log('hiding button')
+				closebtn.hide();
+			}
+			fill(100);
 		}
 	}
 
+	if (!showPopup) {
+		for (let i = 0; i < countryPolygons.length; i++) {
+			result = employment.findRows(countryPolygons[i]['name'], 'Country')
+			if (result.length !== 0) {
+				fill(50, 50, 50, 0.8);
+				ellipse(center_country[countryPolygons[i]['name']][0], center_country[countryPolygons[i]['name']][1], 20);
+			}
+		}
+
+	}
+
+	fill(0);
+	textSize(20)
 	text(yearSlider.value(), 10, 20);
 }
