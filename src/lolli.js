@@ -18,13 +18,12 @@ function preload() {
 
 function setup() {
   // create a canvas to display the chart
-  createCanvas(800, 600);
+  createCanvas(500, 500);
   
-  translate(0, -height);
-  scale(1, -1);
+  
 
   // specify the year and country for which you want to display the chart
-  year = "2020";
+  year = "2018";
   country = "FRA";
   rate = "U_RATE";
 
@@ -39,12 +38,13 @@ function setup() {
 
 
 function draw(){
+  //translate(0, -height);
+  //scale(1, -1);
+  
   displayLollipopChart(nativeMenData, foreignMenData, nativeWomenData, foreignWomenData);
 
-  //fill(0, 0, 0);
-  //text("MEN", 90,10);
-  //fill(0, 0, 0);
-  //text("WOMEN", 180, 10);
+  
+
 }
 
 
@@ -62,33 +62,43 @@ function extractData(data, birth, gender, year, country, rate) {
 
 
 function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) {
-    let x = 50;
-    let x2 = 100;
-    let y = 0;
-    let barWidth = 100;
+    
+    let margin = 100;
+
+    let x = margin + 40;
+    let x2 = margin + 100;
+    let y = height;
+    let barWidth = 0;
     let barHeight = 0;
 
     let colorNative = color(255, 40, 40); //red
     let colorForeign = color(255, 222, 20);  //yellow
 
+    let maxValue=max([nativeMen,nativeWomen,foreignMen,foreignWomen]) * 10;
+    //console.log(maxValue);
+
+
     // X axis
-    //line(0, height - 50, width, height - 50);
+    line(margin, height - margin, margin + 150, height - margin);
 
     // Y axis
-    //line(50, 0, 50, height);
+    //line(margin, height-margin-200, margin, height-margin);
+    line(margin, height - margin - ( maxValue + 70 ), margin, height - margin);
+
+	
 
     //____________________________MEN_______________________________
   
     // Display lollipop for native men in red
-    barHeight = nativeMen * 10;
+    barHeight = nativeMen * 10 + margin;
     displayLollipop(x, y, barWidth, barHeight, colorNative);
-    let firstLollipopY = y + barHeight;
+    let firstLollipopY = y - barHeight;
 
   
-    // Display lollipop for foreign men in blue
-    barHeight = foreignMen * 10;
+    // Display lollipop for foreign men in yellow
+    barHeight = foreignMen * 10 + margin;
     displayLollipop(x, y, barWidth, barHeight, colorForeign);
-    let secondLollipopY = y + barHeight;
+    let secondLollipopY = y - barHeight;
 
     // Connect the two lollipops with a gradient stroke
     let startColor = colorNative;
@@ -108,15 +118,15 @@ function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) 
     //_________________________WOMEN______________________________
 
     // Display lollipop for native women in red
-    barHeight = nativeWomen * 10;
+    barHeight = nativeWomen * 10 + margin;
     displayLollipop(x2, y, barWidth, barHeight, colorNative);
-    firstLollipopY = y + barHeight;
+    firstLollipopY = y - barHeight ;
 
    
-    // Display lollipop for foreign women in blue
-    barHeight = foreignWomen * 10;
+    // Display lollipop for foreign women in yellow
+    barHeight = foreignWomen * 10 + margin;
     displayLollipop(x2, y, barWidth, barHeight, colorForeign);
-    secondLollipopY = y + barHeight;
+    secondLollipopY = y - barHeight;
 
 
     // Connect the two lollipops with a gradient stroke
@@ -134,7 +144,30 @@ function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) 
     line(x2 + barWidth / 2, gradientY, x2 + barWidth / 2, gradientY + gradientIncrement);
     }
 
-}
+
+
+    //___________________________SCALES________________________________
+
+
+
+    fill(0, 0, 0);
+    //nostroke();
+    strokeWeight(0);
+    textAlign(CENTER);
+    text("MEN", x ,height - margin + 20);
+    text("WOMEN", x2, height - margin + 20);
+
+
+
+    for (var k = 0; k <= maxValue + 30; k = k + 20){
+      textAlign(CENTER);
+      text(k / 10, margin - 10, height - margin - k);
+    }
+    textAlign(RIGHT);
+    text("% \nUnemployement", margin - 5, height - margin - k - 20);
+
+
+  }
   
   
 
@@ -142,13 +175,15 @@ function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) 
 function displayLollipop(x, y, barWidth, barHeight, color) {
     fill(color);
     strokeWeight(1);
-    stroke(0, 0, 0);
+    //stroke(0, 0, 0);
     
     //line(x + barWidth / 2, y, x + barWidth / 2, y + barHeight);
 
-    ellipse(x + barWidth / 2, y + barHeight, 15, 15);
+    ellipse(x + barWidth / 2, y - barHeight, 15, 12);
+
 }
   
+
 
 
   
