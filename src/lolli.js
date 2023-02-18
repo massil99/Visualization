@@ -76,7 +76,8 @@ function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) 
     let maxValue=max([nativeMen,nativeWomen,foreignMen,foreignWomen]) * 10;
     //console.log(maxValue);
 
-
+    strokeWeight(1);
+		stroke(0);
     // X axis
     line(margin, height - margin, margin + 150, height - margin);
 
