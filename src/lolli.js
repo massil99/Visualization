@@ -147,34 +147,7 @@ function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) 
 
 
 
-    //_____________________________________HOVER____________________________________
-
-
-    // Check if the mouse is within the bounds of the native men lollipop
-    if (mouseX >= x && mouseX <= x + barWidth && mouseY <= firstLollipopY && mouseY >= firstLollipopY - barHeight) {
-      // Display the value of the native men lollipop next to it
-      textSize(14);
-      fill(0);
-      //noStroke();
-      strokeWeight(1);
-      textAlign(CENTER);
-      text(nativeMen, x + barWidth / 2, firstLollipopY - barHeight - 10);
-    }
-
-    // Check if the mouse is within the bounds of the foreign men lollipop
-    if (mouseX >= x && mouseX <= x + barWidth && mouseY <= secondLollipopY && mouseY >= secondLollipopY - barHeight) {
-      // Display the value of the foreign men lollipop next to it
-      textSize(14);
-      fill(0);
-      //noStroke();
-      textAlign(CENTER);
-      text(foreignMen, x + barWidth / 2, secondLollipopY - barHeight - 10);
-    }
-
-
-
-
-
+    
 
 
     //______________________________LEGEND_________________________________________
