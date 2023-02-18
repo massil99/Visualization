@@ -90,14 +90,13 @@ function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) 
   
     // Display lollipop for native men in red
     barHeight = nativeMen * 10 + margin;
-    //console.log(barHeight, nativeMen)
+    stroke(255);
     displayLollipop(x, y, barWidth, barHeight, colorNative);
     let firstLollipopY = y - barHeight;
 
   
     // Display lollipop for foreign men in yellow
     barHeight = foreignMen * 10 + margin;
-    //console.log(barHeight);
     displayLollipop(x, y, barWidth, barHeight, colorForeign);
     let secondLollipopY = y - barHeight;
 
@@ -120,6 +119,7 @@ function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) 
 
     // Display lollipop for native women in red
     barHeight = nativeWomen * 10 + margin;
+    stroke(255);
     displayLollipop(x2, y, barWidth, barHeight, colorNative);
     firstLollipopY = y - barHeight ;
 
@@ -180,7 +180,6 @@ function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) 
     //______________________________LEGEND_________________________________________
 
 
-    //strokeweight(1);
 
     // Draw legend in top right corner
     let legendX = width - margin - 130;
@@ -189,6 +188,7 @@ function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) 
 
     // Draw legend for native population
     fill(colorForeign);
+    //stroke(255);
     rect(legendX, legendY, legendSize, legendSize);
     fill(0);
     textSize(12);
@@ -198,6 +198,7 @@ function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) 
 
     // Draw legend for foreign population
     fill(colorNative);
+    stroke(255);
     rect(legendX, legendY + 30, legendSize, legendSize);
     fill(0, 0, 0);
     textSize(12);
