@@ -18,13 +18,12 @@ function preload() {
 
 function setup() {
   // create a canvas to display the chart
-  createCanvas(500, 500);
-  
+  createCanvas(500, 600);
   
 
   // specify the year and country for which you want to display the chart
-  year = "2018";
-  country = "FRA";
+  year = "2013";
+  country = "GRC";
   rate = "U_RATE";
 
   // extract the relevant data from the dataset
@@ -38,12 +37,9 @@ function setup() {
 
 
 function draw(){
-  //translate(0, -height);
-  //scale(1, -1);
   
   displayLollipopChart(nativeMenData, foreignMenData, nativeWomenData, foreignWomenData);
 
-  
 
 }
 
@@ -62,6 +58,9 @@ function extractData(data, birth, gender, year, country, rate) {
 
 
 function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) {
+
+    background(255); // set the background color to white
+
     
     let margin = 100;
 
@@ -82,7 +81,6 @@ function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) 
     line(margin, height - margin, margin + 150, height - margin);
 
     // Y axis
-    //line(margin, height-margin-200, margin, height-margin);
     line(margin, height - margin - ( maxValue + 70 ), margin, height - margin);
 
 	
@@ -91,12 +89,14 @@ function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) 
   
     // Display lollipop for native men in red
     barHeight = nativeMen * 10 + margin;
+    //console.log(barHeight, nativeMen)
     displayLollipop(x, y, barWidth, barHeight, colorNative);
     let firstLollipopY = y - barHeight;
 
   
     // Display lollipop for foreign men in yellow
     barHeight = foreignMen * 10 + margin;
+    //console.log(barHeight);
     displayLollipop(x, y, barWidth, barHeight, colorForeign);
     let secondLollipopY = y - barHeight;
 
@@ -146,7 +146,67 @@ function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) 
 
 
 
-    //___________________________SCALES________________________________
+    //_____________________________________HOVER____________________________________
+
+
+    // Check if the mouse is within the bounds of the native men lollipop
+    if (mouseX >= x && mouseX <= x + barWidth && mouseY <= firstLollipopY && mouseY >= firstLollipopY - barHeight) {
+      // Display the value of the native men lollipop next to it
+      textSize(14);
+      fill(0);
+      //noStroke();
+      strokeWeight(1);
+      textAlign(CENTER);
+      text(nativeMen, x + barWidth / 2, firstLollipopY - barHeight - 10);
+    }
+
+    // Check if the mouse is within the bounds of the foreign men lollipop
+    if (mouseX >= x && mouseX <= x + barWidth && mouseY <= secondLollipopY && mouseY >= secondLollipopY - barHeight) {
+      // Display the value of the foreign men lollipop next to it
+      textSize(14);
+      fill(0);
+      //noStroke();
+      textAlign(CENTER);
+      text(foreignMen, x + barWidth / 2, secondLollipopY - barHeight - 10);
+    }
+
+
+
+
+
+
+
+    //______________________________LEGEND_________________________________________
+
+
+    //strokeweight(1);
+
+    // Draw legend in top right corner
+    let legendX = width - margin - 130;
+    let legendY = margin + 50;
+    let legendSize = 15;
+
+    // Draw legend for native population
+    fill(colorForeign);
+    rect(legendX, legendY, legendSize, legendSize);
+    fill(0);
+    textSize(12);
+    textAlign(LEFT);
+    strokeWeight(0);
+    text("Foreign Born", legendX + legendSize + 10, legendY + legendSize);
+
+    // Draw legend for foreign population
+    fill(colorNative);
+    rect(legendX, legendY + 30, legendSize, legendSize);
+    fill(0, 0, 0);
+    textSize(12);
+    strokeWeight(0);
+    text("Native Born", legendX + legendSize + 10, legendY + legendSize + 30);
+
+
+
+
+    //______________________________SCALES________________________________
 
 
 
@@ -164,10 +224,14 @@ function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) 
       text(k / 10, margin - 10, height - margin - k);
     }
     textAlign(RIGHT);
-    text("% \nUnemployement", margin - 5, height - margin - k - 20);
+    text("% \nUnemployement", margin - 5, height - margin - k - 25);
 
 
-  }
+
+
+
+
+}
   
   
 
@@ -187,3 +251,4 @@ function displayLollipop(x, y, barWidth, barHeight, color) {
 
 
   
+
