@@ -46,7 +46,7 @@ for(const row of newDataM){
   listgroupM.push(row.age);
 } 
 
-console.log(listgroupF);
+// console.log(listgroupF);
 
 const datagroup = data1.filter(data => data.years == year && data.geo == country).age;
 console.log(datagroup)
@@ -74,13 +74,16 @@ female.forEach(element => femaleData.push(element * -1))
     }]
   };
 
+  const reasondic = {'TOOEXP':'Too expensive','TOOFAR':'Too far to travel','TOOEFW':'Too expensive or too far to travel or waiting list','NOTIME':'No time','NO_UNMET':'No unmet needs to declare','NOKNOW':'Did not know any good doctor or specialist','WAITING':'Waiting list','FEAR':'Fear of doctor, hospital, examination or treatment','HOPING':'Wanted to wait and see if problem got better on its own','OTH':'Other reason'};
+  console.log(reasondic['TOOFAR']);
+
   // block tooltip
   const tooltip = {
     yAlign: 'bottom',
     titleAligh: 'center',
     callbacks: {
       label: function(context) {
-        return `${context.dataset.label} ${Math.abs(context.raw)}`;
+        return ` ${reasondic[context.label]}   ${context.dataset.label}   ${Math.abs(context.raw)}%`;
       }
     }
   };
@@ -94,6 +97,10 @@ female.forEach(element => femaleData.push(element * -1))
       indexAxis: 'y',
       scales: {
         x: {
+          title: {
+            display: true,
+            text: 'Percentages'
+          },
           stacked: true,
           ticks: {
             callback: function(value, index, values) {
@@ -102,11 +109,19 @@ female.forEach(element => femaleData.push(element * -1))
           }
         },
         y: {
+          title: {
+            display: true,
+            text: 'Reasons'
+          },
           beginAtZero: true,
           stacked: true
         }
       },
       plugins: {
+        legend: {
+          position: "top",
+          align: "middle"
+      },
         tooltip,
         zoom: {
           pan: {
