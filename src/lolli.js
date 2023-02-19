@@ -18,11 +18,11 @@ function preload() {
 
 function setup() {
   // create a canvas to display the chart
-  createCanvas(500, 600);
+  createCanvas(400, 600);
   
 
   // specify the year and country for which you want to display the chart
-  year = "2013";
+  year = "2020";
   country = "GRC";
   rate = "U_RATE";
 
@@ -74,8 +74,9 @@ function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) 
     let colorForeign = color(255, 222, 20);  //yellow
 
     let maxValue=max([nativeMen,nativeWomen,foreignMen,foreignWomen]) * 10;
-    //console.log(maxValue);
 
+
+    
     strokeWeight(1);
 		stroke(0);
     // X axis
@@ -86,8 +87,9 @@ function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) 
 
 	
 
-    //____________________________MEN_______________________________
+    //_______________________________MEN_____________________________________
   
+
     // Display lollipop for native men in red
     barHeight = nativeMen * 10 + margin;
     stroke(255);
@@ -107,6 +109,7 @@ function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) 
     let gradientIncrement = (secondLollipopY - firstLollipopY) / gradientSteps;
 
     strokeWeight(3);
+    
     for (let i = 0; i < gradientSteps; i++) {
     let gradientY = firstLollipopY + i * gradientIncrement;
     let gradientColor = lerpColor(startColor, endColor, i / gradientSteps);
@@ -115,7 +118,9 @@ function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) 
     }
     
 
-    //_________________________WOMEN______________________________
+
+    //____________________________WOMEN_________________________________________
+
 
     // Display lollipop for native women in red
     barHeight = nativeWomen * 10 + margin;
@@ -147,16 +152,14 @@ function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) 
 
 
 
-    
-
-
     //______________________________LEGEND_________________________________________
 
 
+    //strokeweight(1);
 
     // Draw legend in top right corner
-    let legendX = width - margin - 130;
-    let legendY = margin + 50;
+    let legendX = width - margin - 40;
+    let legendY = height - margin - ( maxValue + 70 );
     let legendSize = 15;
 
     // Draw legend for native population
@@ -200,7 +203,6 @@ function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) 
     }
     textAlign(RIGHT);
     text("% \nUnemployement", margin - 5, height - margin - k - 25);
-
 
 
 
