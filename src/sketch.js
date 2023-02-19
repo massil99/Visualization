@@ -37,7 +37,8 @@ let selected_chart = 0;
 
 function extractData(data, birth, gender, year, country, rate) {
 	// extract the rows from the data table that match the specified birth, gender, year, and country
-	let filteredData = data.findRows(birth, "BIRTH").filter(row => row.get("GENDER") == gender && row.get("YEAR") == year && row.get("COUNTRY") == country && row.get("RATE") == rate);
+	let filteredData = data.findRows(country, "Country").filter(row => row.get("GENDER") == gender && birth == row.get("BIRTH") && row.get("Year") == year && row.get("RATE") == rate);
+	console.log(data.findRows(country, "Country"))
 
 	// extract the unemployment rates from the filtered data
 	let unemploymentRates = filteredData.map(row => row.get("Value"));
@@ -53,7 +54,7 @@ function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) 
 
 	let x = popUp.x + margin + 20;
 	let x2 = popUp.x + margin + 120;
-	let y = popUp.height;
+	let y = popUp.height + popUp.y - margin;
 	let barWidth = 0;
 	let barHeight = 0;
 
@@ -78,14 +79,14 @@ function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) 
 
 
 	// Display lollipop for native men in red
-	barHeight = nativeMen * 10 + margin;
+	barHeight = nativeMen * 10;
 	stroke(255);
 	displayLollipop(x, y, barWidth, barHeight, colorNative);
 	let firstLollipopY = y - barHeight;
 
 
 	// Display lollipop for foreign men in yellow
-	barHeight = foreignMen * 10 + margin;
+	barHeight = foreignMen * 10;
 	displayLollipop(x, y, barWidth, barHeight, colorForeign);
 	let secondLollipopY = y - barHeight;
 
@@ -110,14 +111,14 @@ function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) 
 
 
 	// Display lollipop for native women in red
-	barHeight = nativeWomen * 10 + margin;
+	barHeight = nativeWomen * 10;
 	stroke(255);
 	displayLollipop(x2, y, barWidth, barHeight, colorNative);
 	firstLollipopY = y - barHeight;
 
 
 	// Display lollipop for foreign women in yellow
-	barHeight = foreignWomen * 10 + margin;
+	barHeight = foreignWomen * 10;
 	displayLollipop(x2, y, barWidth, barHeight, colorForeign);
 	secondLollipopY = y - barHeight;
 
@@ -198,7 +199,7 @@ function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) 
 function displayLollipop(x, y, barWidth, barHeight, color) {
 	fill(color);
 	strokeWeight(1);
-	ellipse(x + barWidth / 2, y - barHeight, 15, 12);
+	ellipse(x + barWidth / 2, y  - barHeight , 15);
 }
 
 function setGradient(x, y, w, h, c1, c2, axis) {
@@ -348,12 +349,6 @@ function setup() {
 	year = "2020";
 	country = "GRC";
 	rate = "U_RATE";
-
-	// extract the relevant data from the dataset
-	nativeMenData = extractData(employment, "NB", "MEN", year, country, rate);
-	nativeWomenData = extractData(employment, "NB", "WMN", year, country, rate);
-	foreignMenData = extractData(employment, "FB", "MEN", year, country, rate);
-	foreignWomenData = extractData(employment, "FB", "WMN", year, country, rate);
 }
 
 function draw() {
@@ -362,10 +357,10 @@ function draw() {
 	let collision = false;
 
 	////////////////////////////////////////////////
-	nativeMenData = extractData(employment, "NB", "MEN", year, country, rate);
-	nativeWomenData = extractData(employment, "NB", "WMN", year, country, rate);
-	foreignMenData = extractData(employment, "FB", "MEN", year, country, rate);
-	foreignWomenData = extractData(employment, "FB", "WMN", year, country, rate);
+	nativeMenData = extractData(employment, "NB", "MEN", year, selected_country, rate);
+	nativeWomenData = extractData(employment, "NB", "WMN", year, selected_country, rate);
+	foreignMenData = extractData(employment, "FB", "MEN", year, selected_country, rate);
+	foreignWomenData = extractData(employment, "FB", "WMN", year, selected_country, rate);
 
 	for (let i = 0; i < countryPolygons.length; i++) {
 		colorMode(HSL)
@@ -380,7 +375,7 @@ function draw() {
 			//let val = result[0].get('OBS_VALUE') * 100
 			strokeWeight(1);
 			stroke(255);
-			fill(map(val, min_h_rate, max_h_rate, 0, 360), 80, map(val, min_h_rate, max_h_rate, 40, 100));
+			fill(map(val, min_h_rate, max_h_rate, 0, 360), 80, map(val, min_h_rate, max_h_rate, 40, 90));
 		} else {
 			strokeWeight(1);
 			stroke(255);
@@ -519,7 +514,7 @@ function draw() {
 		colorMode(HSL);
 		setGradient(leg_x + max_circleSize + min_circleSize + 10, height - 60, 100, 7,
 			color('hsl(0, 80%, 40%)'),
-			color('hsl(180, 80%, 100%)'),
+			color('hsl(180, 80%, 90%)'),
 			0);
 
 		stroke(255);

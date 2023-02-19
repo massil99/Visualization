@@ -48,6 +48,13 @@ main{
   flex-direction: column; 
 }
 
+#description{
+  border: 3px darkgray solid;
+  border-radius: 5px;
+  padding: 1rem;
+  background-color: #ddd;
+  margin-top: 1rem;
+}
 
 h2{
   margin-bottom: 1rem;
