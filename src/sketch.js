@@ -1,6 +1,7 @@
 const size = 2;
 let countryPolygons = [];
 let country = []
+
 const mapHeight = 700;
 const mapWidth = 900;
 let yearSlider;
@@ -23,6 +24,182 @@ let min_circleSize = 10
 
 let myChart;
 let pyramid;
+
+let unemploymentData;
+
+let nativeMenData;
+let nativeWomenData;
+let foreignMenData;
+let foreignWomenData;
+
+let rate;
+let selected_chart = 0;
+
+function extractData(data, birth, gender, year, country, rate) {
+	// extract the rows from the data table that match the specified birth, gender, year, and country
+	let filteredData = data.findRows(birth, "BIRTH").filter(row => row.get("GENDER") == gender && row.get("YEAR") == year && row.get("COUNTRY") == country && row.get("RATE") == rate);
+
+	// extract the unemployment rates from the filtered data
+	let unemploymentRates = filteredData.map(row => row.get("Value"));
+
+	return unemploymentRates;
+}
+
+
+
+function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) {
+	colorMode(RGB);
+	let margin = 110;
+
+	let x = popUp.x + margin + 20;
+	let x2 = popUp.x + margin + 120;
+	let y = popUp.height;
+	let barWidth = 0;
+	let barHeight = 0;
+
+	let colorNative = color(255, 40, 40); //red
+	let colorForeign = color(255, 222, 20);  //yellow
+
+	let maxValue = max([nativeMen, nativeWomen, foreignMen, foreignWomen]) * 10;
+
+
+
+	strokeWeight(1);
+	stroke(0);
+	// X axis
+	line(popUp.x + margin, popUp.height + popUp.y - margin, popUp.x + margin + 150, popUp.height + popUp.y - margin);
+
+	// Y axis
+	line(popUp.x + margin, popUp.height + popUp.y - margin - (maxValue + 70), popUp.x + margin, popUp.height + popUp.y - margin);
+
+
+
+	//_______________________________MEN_____________________________________
+
+
+	// Display lollipop for native men in red
+	barHeight = nativeMen * 10 + margin;
+	stroke(255);
+	displayLollipop(x, y, barWidth, barHeight, colorNative);
+	let firstLollipopY = y - barHeight;
+
+
+	// Display lollipop for foreign men in yellow
+	barHeight = foreignMen * 10 + margin;
+	displayLollipop(x, y, barWidth, barHeight, colorForeign);
+	let secondLollipopY = y - barHeight;
+
+	// Connect the two lollipops with a gradient stroke
+	let startColor = colorNative;
+	let endColor = colorForeign;
+	let gradientSteps = 50;
+	let gradientIncrement = (secondLollipopY - firstLollipopY) / gradientSteps;
+
+	strokeWeight(3);
+
+	for (let i = 0; i < gradientSteps; i++) {
+		let gradientY = firstLollipopY + i * gradientIncrement;
+		let gradientColor = lerpColor(startColor, endColor, i / gradientSteps);
+		stroke(gradientColor);
+		line(x + barWidth / 2, gradientY, x + barWidth / 2, gradientY + gradientIncrement);
+	}
+
+
+
+	//____________________________WOMEN_________________________________________
+
+
+	// Display lollipop for native women in red
+	barHeight = nativeWomen * 10 + margin;
+	stroke(255);
+	displayLollipop(x2, y, barWidth, barHeight, colorNative);
+	firstLollipopY = y - barHeight;
+
+
+	// Display lollipop for foreign women in yellow
+	barHeight = foreignWomen * 10 + margin;
+	displayLollipop(x2, y, barWidth, barHeight, colorForeign);
+	secondLollipopY = y - barHeight;
+
+
+	// Connect the two lollipops with a gradient stroke
+
+	startColor = colorNative;
+	endColor = colorForeign;
+	gradientSteps = 50;
+	gradientIncrement = (secondLollipopY - firstLollipopY) / gradientSteps;
+
+	strokeWeight(3);
+	for (let i = 0; i < gradientSteps; i++) {
+		gradientY = firstLollipopY + i * gradientIncrement;
+		gradientColor = lerpColor(startColor, endColor, i / gradientSteps);
+		stroke(gradientColor);
+		line(x2 + barWidth / 2, gradientY, x2 + barWidth / 2, gradientY + gradientIncrement);
+	}
+
+
+
+	//______________________________LEGEND_________________________________________
+
+
+	//strokeweight(1);
+
+	// Draw legend in top right corner
+	let legendX = width - margin - 40;
+	let legendY = height - margin - (maxValue + 70);
+	let legendSize = 15;
+
+	// Draw legend for native population
+	fill(colorForeign);
+	//stroke(255);
+	rect(legendX, legendY, legendSize, legendSize);
+	fill(0);
+	textSize(12);
+	textAlign(LEFT);
+	strokeWeight(0);
+	text("Foreign Born", legendX + legendSize + 10, legendY + legendSize);
+
+	// Draw legend for foreign population
+	fill(colorNative);
+	stroke(255);
+	rect(legendX, legendY + 30, legendSize, legendSize);
+	fill(0, 0, 0);
+	textSize(12);
+	strokeWeight(0);
+	text("Native Born", legendX + legendSize + 10, legendY + legendSize + 30);
+
+
+
+
+	//______________________________SCALES________________________________
+
+
+
+	fill(0, 0, 0);
+	//nostroke();
+	strokeWeight(0);
+	textAlign(CENTER);
+	text("MEN", x, popUp.y + popUp.height - margin + 20);
+	text("WOMEN", x2, popUp.y + popUp.height - margin + 20);
+
+
+
+	for (var k = 0; k <= maxValue + 30; k = k + 20) {
+		textAlign(CENTER);
+		text(k / 10, popUp.x + margin - 10, popUp.height + popUp.y- margin - k);
+	}
+	textAlign(RIGHT);
+	text("% \nUnemployement", popUp.x + margin - 5, popUp.height+ popUp.y - margin - k - 25);
+
+	//displayLollipopChart(nativeMenData, foreignMenData, nativeWomenData, foreignWomenData);
+}
+
+
+function displayLollipop(x, y, barWidth, barHeight, color) {
+	fill(color);
+	strokeWeight(1);
+	ellipse(x + barWidth / 2, y - barHeight, 15, 12);
+}
 
 function setGradient(x, y, w, h, c1, c2, axis) {
 	noFill();
@@ -133,10 +310,12 @@ function setup() {
 	u = createButton('Employement');
 	u.parent('btns')
 	u.addClass('chartBtns')
+	u.mousePressed(()=>selected_chart = 0)
 
 	h = createButton('Health');
 	h.parent('btns')
 	h.addClass('chartBtns')
+	h.mousePressed(()=>selected_chart = 1)
 
 	yearSlider = createSlider(min(employment.getColumn('Year')), max(employment.getColumn('Year')), 2014);
 	yearSlider.parent('p5stuff')
@@ -162,6 +341,19 @@ function setup() {
 	pyramid = select('.chartCard')
 	pyramid.position(330, mapHeight - 500, 'absolute')
 	pyramid.hide()
+
+	///////////////////////////////////////
+
+	// specify the year and country for which you want to display the chart
+	year = "2020";
+	country = "GRC";
+	rate = "U_RATE";
+
+	// extract the relevant data from the dataset
+	nativeMenData = extractData(employment, "NB", "MEN", year, country, rate);
+	nativeWomenData = extractData(employment, "NB", "WMN", year, country, rate);
+	foreignMenData = extractData(employment, "FB", "MEN", year, country, rate);
+	foreignWomenData = extractData(employment, "FB", "WMN", year, country, rate);
 }
 
 function draw() {
@@ -169,10 +361,15 @@ function draw() {
 	background(211, 211, 211);
 	let collision = false;
 
+	////////////////////////////////////////////////
+	nativeMenData = extractData(employment, "NB", "MEN", year, country, rate);
+	nativeWomenData = extractData(employment, "NB", "WMN", year, country, rate);
+	foreignMenData = extractData(employment, "FB", "MEN", year, country, rate);
+	foreignWomenData = extractData(employment, "FB", "WMN", year, country, rate);
+
 	for (let i = 0; i < countryPolygons.length; i++) {
 		colorMode(HSL)
 		result = health_rep.findRows(countryPolygons[i]['code'], 'geo')
-		console.log(year)
 		result = result.filter(row => row.get('TIME_PERIOD') == year)
 		if (result.length !== 0) {
 			let val = result.reduce((acc, r) => {
@@ -238,7 +435,22 @@ function draw() {
 				rect(popUp.x, popUp.y, popUp.width, popUp.height);
 				closebtn.style('display', 'inline');
 				chartBtns.show();
-				pyramid.show();
+				if(selected_chart === 1){
+					pyramid.show();
+					textSize(40);
+					textAlign(CENTER)
+					fill(0)
+					text('Helath', mapWidth/2, popUp.y + 50 );
+				}else{
+					textSize(40);
+					textAlign(CENTER)
+					fill(0)
+					text('Unemployment', mapWidth/2, popUp.y + 50);
+					pyramid.hide();
+  					displayLollipopChart(nativeMenData, foreignMenData, nativeWomenData, foreignWomenData);
+				}
+				textAlign(LEFT);
+
 			} else {
 				selected_country = ''
 				closebtn.hide();
@@ -321,6 +533,8 @@ function draw() {
 
 	hovered_country = ''
 	year = yearSlider.value()
+
+
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -345,10 +559,9 @@ function createPyramid(year, country) {
 function makechart(data1, year, country) {
 	const agegroup = 'Y_GE16'
 	// setup 
-	let newDataF = data1.filter(data => data.years == year&& data.geo == country && data.sex == 'F' && data.age == agegroup);
-	let newDataM = data1.filter(data => data.years == year&& data.geo == country && data.sex == 'M' && data.age == agegroup);
+	let newDataF = data1.filter(data => data.years == year && data.geo == country && data.sex == 'F' && data.age == agegroup);
+	let newDataM = data1.filter(data => data.years == year && data.geo == country && data.sex == 'M' && data.age == agegroup);
 
-	console.log(newDataF)
 	const listreasonF = [];
 	const listvalueF = [];
 	const listgroupF = [];

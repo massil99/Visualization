@@ -10,12 +10,6 @@ let country;
 let rate;
 
 
-function preload() {
-  // load the csv file containing the unemployment data
-  unemploymentData = loadTable("assets/employment.csv", "csv", "header");
-}
-
-
 function setup() {
   // create a canvas to display the chart
   createCanvas(400, 600);
