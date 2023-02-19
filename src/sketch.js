@@ -7,9 +7,15 @@ let yearSlider;
 
 let popUp;
 let showPopup;
+let chartBtns;
 
 let selected_country;
-let hoverd_country;
+let hovered_country;
+
+let max_h_rate = 0
+let min_h_rate = 0
+
+let max_circleSize = 170
 
 function convertPathToPolygons(path) {
 	let coord_point = [0, 0];
@@ -68,34 +74,52 @@ function preload() {
 	center_country = loadJSON('assets/center.json')
 	employment = loadTable('assets/employment.csv', 'csv', 'header')
 	health_rep = loadTable('assets/health_self_report.csv', 'csv', 'header')
+	country_code = loadJSON('assets/names.json')
 }
 
 function setup() {
+	const myCanvas = createCanvas(mapWidth, mapHeight); //change later when intergrate the diesciption
+	myCanvas.parent('p5stuff')
+
+	let offset = 40;
+	popUp = {'x': offset, 'y': offset, 'width': mapWidth - offset * 2, 'height': mapHeight - offset * 2}
+
+	closebtn = createButton('X')
+	closebtn.parent('p5stuff')
+	closebtn.addClass('closeBtn')
+	closebtn.position(popUp.width + offset, -popUp.height - offset, 'relative')
+	closebtn.mousePressed(hidePopu);
+	closebtn.hide();
+
+	chartBtns = createDiv()
+	chartBtns.id('btns')
+	chartBtns.parent('p5stuff');
+	chartBtns.hide();
+
+	u = createButton('Employement');
+	u.parent('btns')
+	u.addClass('chartBtns')
+
+	h = createButton('Health');
+	h.parent('btns')
+	h.addClass('chartBtns')
+
 	yearSlider = createSlider(min(employment.getColumn('Year')), max(employment.getColumn('Year')));
 	yearSlider.parent('p5stuff')
 	yearSlider.position(0, 0, 'relative');
 	yearSlider.style('width', `${mapWidth}px`);
 
-	let offset = 40;
-	popUp = { 'x': offset, 'y': offset, 'width': mapWidth - offset * 2, 'height': mapHeight - offset * 2 }
-
-	closebtn = createButton('X')
-	closebtn.parent('p5stuff')
-	closebtn.addClass('closeBtn')
-	closebtn.position(-popUp.x, popUp.y, 'relative')
-	closebtn.mousePressed(hidePopu);
-	closebtn.hide();
-
-	const myCanvas = createCanvas(mapWidth, mapHeight); //change later when intergrate the diesciption
-	myCanvas.parent('p5stuff')
 	country = country['countries'];
-	maxValEmp = max(employment.getColumn('Value'))
-	minValEmp = min(employment.getColumn('Value'))
+
+	max_h_rate = max(health_rep.getColumn('OBS_VALUE'))
+	min_h_rate = min(health_rep.getColumn('OBS_VALUE'))
+	console.log(min_h_rate, max_h_rate)
 
 	for (let i = 0; i < country.length; i++) {
 		let polys = convertPathToPolygons(country[i].vertexPoint)
 		countryPolygons.push(
 			{
+				"code": country_code[country[i]["name"]], 
 				"name": country[i]["name"],
 				"poly": polys,
 			}
@@ -107,19 +131,18 @@ function draw() {
 	colorMode(RGB)
 	background(211, 211, 211);
 	let collision = false;
+
 	for (let i = 0; i < countryPolygons.length; i++) {
-		result = employment.findRows(countryPolygons[i]['name'], 'Country')
+		result = health_rep.findRows(countryPolygons[i]['code'], 'geo')
 		colorMode(HSL)
-		result = result.filter(row => row.get('Year') == yearSlider.value() &&
-			row.get('RATE') == 'U_RATE')
+		result = result.filter(row => row.get('TIME_PERIOD') == yearSlider.value())
 
 		if (result.length !== 0) {
-			let val = result[0].get('Value')
-			//fill(16, 70, map(val, minValEmp, maxValEmp, 0, 100));
+			let val = (result.reduce((acc, r) => r.get('OBS_VALUE'), 0)/ result.length )
+			//let val = result[0].get('OBS_VALUE') * 100
 			strokeWeight(1);
 			stroke(255);
-			//fill(16, 70, val);
-			fill(150, 70, map(val, 0, 100, 0, 100));
+			fill(map(val, min_h_rate, max_h_rate, 0, 360), 80, 60);
 		} else {
 			strokeWeight(1);
 			stroke(255);
@@ -129,7 +152,7 @@ function draw() {
 		if (!showPopup && !collision) {
 			collision = countryPolygons[i].poly.some(poly => detectCollision(poly, mouseX, mouseY));
 			if (collision) {
-				hoverd_country = countryPolygons[i].name
+				hovered_country = countryPolygons[i].name
 				if (mouseIsPressed) {
 					selected_country = countryPolygons[i].name
 					showPopup = true;
@@ -147,10 +170,11 @@ function draw() {
 	}
 
 	for (let i = 0; i < countryPolygons.length; i++) {
-		if (selected_country === countryPolygons[i].name) {
-			strokeWeight(3);
-			stroke('blue');
-			fill(40);
+		if (hovered_country  === countryPolygons[i].name ||
+			selected_country === countryPolygons[i].name) {
+			stroke('lightblue');
+			colorMode(RGB)
+			fill(140, 140 ,175);
 			collision = false;
 
 			for (const poly of countryPolygons[i].poly) {
@@ -165,26 +189,32 @@ function draw() {
 			stroke(255);
 
 			if (showPopup === true) {
-				fill(0, 0, 0, 0.5);
+				fill('#0007');
 				rect(0, 0, width, height);
-				fill(90);
+				fill(200);
 				rect(popUp.x, popUp.y, popUp.width, popUp.height);
 				closebtn.style('display', 'inline');
+				chartBtns.show();
 			} else {
 				selected_country = ''
-				console.log('hiding button')
+				hovered_country = ''
 				closebtn.hide();
+				chartBtns.hide();
 			}
 			fill(100);
 		}
 	}
 
-	if (!showPopup) {
+
+	if(!showPopup) {
 		for (let i = 0; i < countryPolygons.length; i++) {
 			result = employment.findRows(countryPolygons[i]['name'], 'Country')
+			result = result.filter(row => row.get('Year') == yearSlider.value() && row.get('RATE') === 'U_RATE')
 			if (result.length !== 0) {
-				fill(50, 50, 50, 0.8);
-				ellipse(center_country[countryPolygons[i]['name']][0], center_country[countryPolygons[i]['name']][1], 20);
+				fill('#09aff677');
+				ellipse(center_country[countryPolygons[i]['name']][0], 
+					center_country[countryPolygons[i]['name']][1], 
+					map(result[0].get('Value'), 0, 100, 1, max_circleSize));
 			}
 		}
 

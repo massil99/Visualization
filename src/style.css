@@ -9,8 +9,10 @@ body{
 }
 
 #p5stuff{
-    display: inline;
+    display: flex;
+    flex-direction: column;
 }
+
 main{
     width: 100%;
     padding: 1rem 5rem;
@@ -43,4 +45,15 @@ p{
     outline: none;
     border-radius: 2px;
     border: none;
+}
+
+.chartBtns{
+    width: 100px;
+    height: 30px;
+    margin: 0 5px 0 0;
+}
+
+.chartBtnSelected{
+    background-color: #000000;
+    color: white;
 }
