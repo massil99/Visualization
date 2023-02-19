@@ -1,0 +1,150 @@
+// Data: France 2021
+
+// female datapoint converter
+let myChart;
+var country = "FR";
+var year = 2020;
+var agegroup = "Y55-64"
+//read csv file
+d3.csv("assests/health_self_report.csv", d => {
+  return {
+    sex: d.sex,
+    //lev_perc: d.lev_perc,
+    age: d.age,
+    reason: d.reason,
+    geo: d.geo,
+    years: +d.TIME_PERIOD,
+    percent: +d.OBS_VALUE,
+  }
+}).then(data => {
+  makechart(data);
+  resetZoomChart();
+})
+
+function makechart(data1) {
+  // setup 
+
+  let newDataF = data1.filter(data => data.years == year && data.geo == country && data.sex == 'F' && data.age == agegroup);
+  let newDataM = data1.filter(data => data.years == year && data.geo == country && data.sex == 'M' && data.age == agegroup);
+
+  const listreasonF = [];
+  const listvalueF = [];
+  const listgroupF = [];
+  const listreasonM = [];
+  const listvalueM = [];
+  const listgroupM = [];
+  for (const row of newDataF) {
+    listreasonF.push(row.reason);
+    listvalueF.push(row.percent);
+    listgroupF.push(row.age)
+  }
+
+
+  for (const row of newDataM) {
+    listreasonM.push(row.reason);
+    listvalueM.push(row.percent);
+    listgroupM.push(row.age);
+  }
+
+
+  const datagroup = data1.filter(data => data.years == year && data.geo == country).age;
+  const female = listvalueM;
+  const femaleData = [];
+  female.forEach(element => femaleData.push(element * -1))
+
+  var data = {
+    labels: listreasonF,
+
+    datasets: [{
+      label: 'Male',
+      data: listvalueF,
+      backgroundColor: 'rgba(54, 162, 235, 0.2)',
+      borderColor: 'rgba(54, 162, 235, 1)',
+      borderWidth: 1
+    },
+    {
+      label: 'Female',
+      data: femaleData,
+      backgroundColor: 'rgba(255, 26, 104, 0.2)',
+      borderColor: 'rgba(255, 26, 104, 1)',
+      borderWidth: 1
+    }]
+  };
+
+  const reasondic = { 'TOOEXP': 'Too expensive', 'TOOFAR': 'Too far to travel', 'TOOEFW': 'Too expensive or too far to travel or waiting list', 'NOTIME': 'No time', 'NO_UNMET': 'No unmet needs to declare', 'NOKNOW': 'Did not know any good doctor or specialist', 'WAITING': 'Waiting list', 'FEAR': 'Fear of doctor, hospital, examination or treatment', 'HOPING': 'Wanted to wait and see if problem got better on its own', 'OTH': 'Other reason' };
+
+  // block tooltip
+  const tooltip = {
+    yAlign: 'bottom',
+    titleAligh: 'center',
+    callbacks: {
+      label: function (context) {
+        return ` ${reasondic[context.label]}   ${context.dataset.label}   ${Math.abs(context.raw)}%`;
+      }
+    }
+  };
+
+
+  // config 
+  const config = {
+    type: 'bar',
+    data,
+    options: {
+      indexAxis: 'y',
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'Percentages'
+          },
+          stacked: true,
+          ticks: {
+            callback: function (value, index, values) {
+              return Math.abs(value);
+            }
+          }
+        },
+        y: {
+          title: {
+            display: true,
+            text: 'Reasons'
+          },
+          beginAtZero: true,
+          stacked: true
+        }
+      },
+      plugins: {
+        legend: {
+          position: "top",
+          align: "middle"
+        },
+        tooltip,
+        zoom: {
+          pan: {
+            enabled: true,
+            mode: 'xy',
+            threshold: 10
+          },
+          zoom: {
+            wheel: {
+              enabled: true
+            }
+          }
+        }
+      }
+    }
+  };
+
+  // render init block
+  myChart = new Chart(
+    document.getElementById('myChart'),
+    config
+  );
+
+
+}
+//let newData = data.filter(data => data.TIME_PERIOD == year && data.geo==country);
+
+function resetZoomChart() {
+  myChart.resetZoom();
+}
