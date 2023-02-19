@@ -44,80 +44,14 @@
     <div class="chartCard">
       <div class="chartBox">
         <canvas id="myChart"></canvas>
+        <hr>
+        <button onclick="resetZoomChart()">Reset</button>
       </div>
     </div>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
-    <script>
-
-    // Data: France 2021
-
-    // female datapoint converter
-    const female = [3.3, 0.3, 4.6, 0.4, 92.8, 0.1, 1.0]
-    const femaleData = [];
-    female.forEach(element => femaleData.push(element * -1))
-
-    // setup 
-    const data = {
-      labels: ['Too expensive', 'Too far to travel', 'Too expensive or too far to travel or waiting list', 'No time', 'No unmet needs to declare', 'Did not know any good doctor or specialist', 'Waiting list'],
-      datasets: [{
-        label: 'Male',
-        data: [1.9, 0, 2.4, 0.7, 95.2, 0, 0.5],
-        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-        borderColor: 'rgba(54, 162, 235, 1)',
-        borderWidth: 1
-      },
-      {
-        label: 'Female',
-        data: femaleData,
-        backgroundColor: 'rgba(255, 26, 104, 0.2)',
-        borderColor: 'rgba(255, 26, 104, 1)',
-        borderWidth: 1
-      }]
-    };
-
-    // block tooltip
-    const tooltip = {
-      yAlign: 'bottom',
-      titleAligh: 'center',
-      callbacks: {
-        label: function(context) {
-          return `${context.dataset.label} ${Math.abs(context.raw)}`;
-        }
-      }
-    };
-
-    // config 
-    const config = {
-      type: 'bar',
-      data,
-      options: {
-        indexAxis: 'y',
-        scales: {
-          x: {
-            stacked: true,
-            ticks: {
-              callback: function(value, index, values) {
-                 return Math.abs(value);
-              }
-            }
-          },
-          y: {
-            beginAtZero: true,
-            stacked: true
-          }
-        },
-        plugins: {
-          tooltip,
-        }
-      }
-    };
-
-    // render init block
-    const myChart = new Chart(
-      document.getElementById('myChart'),
-      config
-    );
-    </script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js" integrity="sha512-UXumZrZNiOwnTcZSHLOfcTs0aos2MzBWHXOHOuB0J/R44QB0dwY5JgfbvljXcklVf65Gc4El6RjZ+lnwd2az2g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/2.0.0/chartjs-plugin-zoom.min.js" integrity="sha512-B6F98QATBNaDHSE7uANGo5h0mU6fhKCUD+SPAY7KZDxE8QgZw9rewDtNiu3mbbutYDWOKT3SPYD8qDBpG2QnEg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="pyramid.js"></script>
 
   </body>
 </html>
