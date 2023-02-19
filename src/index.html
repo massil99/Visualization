@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="en">
 
 <head>
   <meta charset="utf-8">
@@ -9,9 +9,16 @@
   <script src="../p5.min.js"></script>
   <!-- <script src="../addons/p5.sound.js"></script> -->
   <script src="lolli.js"></script>
+
 </head>
 
 <body>
+  <div class="chartCard">
+    <div class="chartBox" id="chartBox">
+      <canvas id="myChart"></canvas>
+      <hr>
+    </div>
+  </div>
   <main>
     <div id="p5stuff"></div>
     <div id="description">
@@ -46,8 +53,18 @@
         graphs appear showing in more detail the health and employment situation of immigrants.</p>
 
     </div>
-
   </main>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"
+    integrity="sha512-UXumZrZNiOwnTcZSHLOfcTs0aos2MzBWHXOHOuB0J/R44QB0dwY5JgfbvljXcklVf65Gc4El6RjZ+lnwd2az2g=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/2.0.0/chartjs-plugin-zoom.min.js"
+    integrity="sha512-B6F98QATBNaDHSE7uANGo5h0mU6fhKCUD+SPAY7KZDxE8QgZw9rewDtNiu3mbbutYDWOKT3SPYD8qDBpG2QnEg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="../p5.min.js"></script>
+  <script src="sketch.js"></script>
 </body>
 
 </html>
