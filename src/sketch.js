@@ -15,7 +15,30 @@ let hovered_country;
 let max_h_rate = 0
 let min_h_rate = 0
 
-let max_circleSize = 170
+let max_circleSize = 140
+let min_circleSize = 10
+
+function setGradient(x, y, w, h, c1, c2, axis) {
+	noFill();
+
+	if (axis === 1) {
+		// Top to bottom gradient
+		for (let i = y; i <= y + h; i++) {
+			let inter = map(i, y, y + h, 0, 1);
+			let c = lerpColor(c1, c2, inter);
+			stroke(c);
+			line(x, i, x + w, i);
+		}
+	} else if (axis === 0) {
+		// Left to right gradient
+		for (let i = x; i <= x + w; i++) {
+			let inter = map(i, x, x + w, 0, 1);
+			let c = lerpColor(c1, c2, inter);
+			stroke(c);
+			line(i, y, i, y + h);
+		}
+	}
+}
 
 function convertPathToPolygons(path) {
 	let coord_point = [0, 0];
@@ -82,7 +105,7 @@ function setup() {
 	myCanvas.parent('p5stuff')
 
 	let offset = 40;
-	popUp = {'x': offset, 'y': offset, 'width': mapWidth - offset * 2, 'height': mapHeight - offset * 2}
+	popUp = { 'x': offset, 'y': offset, 'width': mapWidth - offset * 2, 'height': mapHeight - offset * 2 }
 
 	closebtn = createButton('X')
 	closebtn.parent('p5stuff')
@@ -119,7 +142,7 @@ function setup() {
 		let polys = convertPathToPolygons(country[i].vertexPoint)
 		countryPolygons.push(
 			{
-				"code": country_code[country[i]["name"]], 
+				"code": country_code[country[i]["name"]],
 				"name": country[i]["name"],
 				"poly": polys,
 			}
@@ -133,16 +156,16 @@ function draw() {
 	let collision = false;
 
 	for (let i = 0; i < countryPolygons.length; i++) {
-		result = health_rep.findRows(countryPolygons[i]['code'], 'geo')
 		colorMode(HSL)
+		result = health_rep.findRows(countryPolygons[i]['code'], 'geo')
 		result = result.filter(row => row.get('TIME_PERIOD') == yearSlider.value())
 
 		if (result.length !== 0) {
-			let val = (result.reduce((acc, r) => r.get('OBS_VALUE'), 0)/ result.length )
+			let val = (result.reduce((acc, r) => r.get('OBS_VALUE'), 0) / result.length)
 			//let val = result[0].get('OBS_VALUE') * 100
 			strokeWeight(1);
 			stroke(255);
-			fill(map(val, min_h_rate, max_h_rate, 0, 360), 80, 60);
+			fill(map(val, min_h_rate, max_h_rate, 0, 180), 80, 50);
 		} else {
 			strokeWeight(1);
 			stroke(255);
@@ -170,11 +193,11 @@ function draw() {
 	}
 
 	for (let i = 0; i < countryPolygons.length; i++) {
-		if (hovered_country  === countryPolygons[i].name ||
+		if (hovered_country === countryPolygons[i].name ||
 			selected_country === countryPolygons[i].name) {
 			stroke('lightblue');
 			colorMode(RGB)
-			fill(140, 140 ,175);
+			fill(140, 140, 175);
 			collision = false;
 
 			for (const poly of countryPolygons[i].poly) {
@@ -197,7 +220,6 @@ function draw() {
 				chartBtns.show();
 			} else {
 				selected_country = ''
-				hovered_country = ''
 				closebtn.hide();
 				chartBtns.hide();
 			}
@@ -206,21 +228,72 @@ function draw() {
 	}
 
 
-	if(!showPopup) {
+	if (!showPopup) {
 		for (let i = 0; i < countryPolygons.length; i++) {
 			result = employment.findRows(countryPolygons[i]['name'], 'Country')
 			result = result.filter(row => row.get('Year') == yearSlider.value() && row.get('RATE') === 'U_RATE')
 			if (result.length !== 0) {
 				fill('#09aff677');
-				ellipse(center_country[countryPolygons[i]['name']][0], 
-					center_country[countryPolygons[i]['name']][1], 
-					map(result[0].get('Value'), 0, 100, 1, max_circleSize));
+				ellipse(center_country[countryPolygons[i]['name']][0],
+					center_country[countryPolygons[i]['name']][1],
+					map(result[0].get('Value'), 0, 100, min_circleSize, max_circleSize));
+			}
+		}
+		colorMode(RGB)
+		fill(0);
+		textSize(20)
+		text(yearSlider.value(), 10, 20);
+
+		let text_x = mapWidth - 320
+		let med_rate = 0
+		let emp_rate = 0
+		for (let i = 0; i < countryPolygons.length; i++) {
+			if (countryPolygons[i]['name'] === hovered_country) {
+				result = employment.findRows(countryPolygons[i]['name'], 'Country')
+				result = result.filter(row => row.get('Year') == yearSlider.value() && row.get('RATE') === 'U_RATE')
+				if (result.length !== 0) {
+					emp_rate = result[0].get('Value')
+				}
+
+				result = health_rep.findRows(countryPolygons[i]['code'], 'geo')
+				result = result.filter(row => row.get('TIME_PERIOD') == yearSlider.value())
+				if (result.length !== 0)
+					med_rate = (result.reduce((acc, r) => r.get('OBS_VALUE'), 0) / result.length)
 			}
 		}
 
+		textSize(13)
+		fill(40);
+		text(`Unemplyment rate: ${parseFloat(emp_rate).toFixed(2)}%`, text_x, mapHeight - 40);
+		text(`Avg. rate of unmet medical exam.: ${parseFloat(med_rate).toFixed(2)}%`, text_x, mapHeight - 20);
+
+		const leg_x = 50
+		stroke(255);
+		fill('#09aff677');
+		strokeWeight(1);
+		textSize(12);
+		ellipse(leg_x, mapHeight - 40 - min_circleSize / 2, min_circleSize);
+		ellipse(leg_x + 5 + max_circleSize / 2, mapHeight - 40 - max_circleSize / 2, max_circleSize);
+		fill(0);
+		text(0, leg_x, mapHeight - 30)
+		text(100, leg_x + 5 + max_circleSize / 2, mapHeight- 30)
+
+		text('Unemployment rate', leg_x , mapHeight)
+
+		colorMode(HSL);
+		setGradient(leg_x + max_circleSize + min_circleSize + 10, height - 60, 100, 7,
+						color('hsl(0, 80%, 60%)'), 
+						color('hsl(180, 80%, 60%)'), 
+						0);
+
+		stroke(255);
+		fill(0);
+		text(min_h_rate, leg_x + max_circleSize + min_circleSize + 10, height - 30)
+		text(max_h_rate, leg_x + max_circleSize + min_circleSize + 10 + 100, height - 30 )
+
+		text('Avg. unmet medical exam.', leg_x + max_circleSize + min_circleSize + 10, height)
 	}
 
-	fill(0);
-	textSize(20)
-	text(yearSlider.value(), 10, 20);
+
+	hovered_country = ''
 }
