@@ -50,7 +50,7 @@ function extractData(data, birth, gender, year, country, rate) {
 
 function displayLollipopChart(nativeMen, foreignMen, nativeWomen, foreignWomen) {
 	colorMode(RGB);
-	let margin = 110;
+	let margin = 120;
 
 	let x = popUp.x + margin + 20;
 	let x2 = popUp.x + margin + 120;
@@ -435,7 +435,7 @@ function draw() {
 					textSize(40);
 					textAlign(CENTER)
 					fill(0)
-					text('Helath', mapWidth/2, popUp.y + 50 );
+					text('Health', mapWidth/2, popUp.y + 50 );
 				}else{
 					textSize(40);
 					textAlign(CENTER)
@@ -496,7 +496,7 @@ function draw() {
 		text(`${hovered_country}`, text_x, mapHeight - 60);
 		textSize(13)
 		text(`Unemplyment rate: ${parseFloat(emp_rate).toFixed(2)}%`, text_x, mapHeight - 40);
-		text(`Avg. rate of unmet medical exam.: ${parseFloat(med_rate).toFixed(2)}%`, text_x, mapHeight - 20);
+		//text(`Avg. rate of unmet medical exam.: ${parseFloat(med_rate).toFixed(2)}%`, text_x, mapHeight - 20);
 
 		const leg_x = 50
 		stroke(255);
@@ -535,7 +535,7 @@ function draw() {
 /////////////////////////////////////////////////////////////////////////
 
 function createPyramid(year, country) {
-	d3.csv("assets/health_self_report.csv", d => {
+	d3.csv("assets/test/test.csv", d => {
 		return {
 			age: d.age,
 			sex: d.sex,
